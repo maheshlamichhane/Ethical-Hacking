@@ -1,0 +1,18 @@
+Peneratation Testing
+
+i. Network Hacking
+    a. Pre-connection attacks
+    b. Gaining access
+    c. Post-connection attacks
+
+
+Wireless Adapter
+Needed for;
+-> Network Hacking > Gaining Access > WEP Cracking
+-> Network Hacking > Gaining Access > WPA/WPA2 Cracking
+
+
+Wireless adapter requirements:
+-> Monitor mode.
+-> Packet injection.
+-> AP mode.
